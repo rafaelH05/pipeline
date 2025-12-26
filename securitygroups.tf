@@ -89,6 +89,12 @@ resource "aws_security_group" "vm_monitor-sg" {
     protocol = "tcp"
     cidr_blocks = [ "10.0.1.0/24" ]
   }
+  ingress {
+    to_port = 22
+    from_port = 22
+    protocol = "tcp"
+    cidr_blocks = [ "10.0.1.0/24" ]
+  }
   egress {
     to_port = 0
     from_port = 0
