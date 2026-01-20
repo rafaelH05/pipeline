@@ -1,0 +1,58 @@
+name: Deploy Infra & App
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: "us-east-1"
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: hashicorp/setup-terraform@v2
+
+    - name: Terraform Apply
+      id: tf
+      working-directory: ./terraform
+      run: |
+        terraform init
+        terraform apply -auto-approve
+
+    - name: Exportar variables
+      working-directory: ./terraform
+      run: |
+        echo "RDS_HOST=$(terraform output -raw rds_endpoint)" >> $GITHUB_ENV
+        echo "BASTION_IP=$(terraform output -raw vm1_ip)" >> $GITHUB_ENV
+        echo "VM2_IP=$(terraform output -raw vm2_private_ip)" >> $GITHUB_ENV
+        echo "VM3_IP=$(terraform output -raw vm3_private_ip)" >> $GITHUB_ENV
+
+    - name: Generar Inventario Ansible
+      run: |
+        # Definimos vm1
+        echo "[vm1]" > hosts.ini
+        echo "${{ env.BASTION_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=key.pem" >> hosts.ini
+        
+        echo "[vm2]" >> hosts.ini
+        echo "${{ env.VM2_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=key.pem ansible_ssh_common_args='-o ProxyCommand=\"ssh -W %h:%p -q ubuntu@${{ env.BASTION_IP }} -i key.pem -o StrictHostKeyChecking=no\"'" >> hosts.ini
+        
+        echo "[vm3]" >> hosts.ini
+        echo "${{ env.VM3_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=key.pem ansible_ssh_common_args='-o ProxyCommand=\"ssh -W %h:%p -q ubuntu@${{ env.BASTION_IP }} -i key.pem -o StrictHostKeyChecking=no\"'" >> hosts.ini
+
+    - name: Configurar Clave SSH
+      run: |
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > key.pem
+        chmod 600 key.pem
+        # Importante: Desactivar chequeo estricto para evitar preguntas de "yes/no"
+        export ANSIBLE_HOST_KEY_CHECKING=False
+
+    - name: Ejecutar Ansible
+      env:
+        ANSIBLE_HOST_KEY_CHECKING: "False"
+      run: |
+        ansible-playbook -i hosts.ini playbook.yml \
+        --extra-vars "db_host=${{ env.RDS_HOST }}"
