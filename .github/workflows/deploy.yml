@@ -55,4 +55,4 @@ jobs:
         ANSIBLE_HOST_KEY_CHECKING: "False"
       run: |
         ansible-playbook -i hosts.ini playbook.yml \
-        --extra-vars "db_host=${{ env.RDS_HOST }}"
+        --extra-vars "db_host=${{ env.RDS_HOST }} my_github_token=${{ secrets.MI_GITHUB_TOKEN }}"
