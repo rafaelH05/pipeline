@@ -1,7 +1,10 @@
-/.terraform
-/.terraform.lock.hcl
-/terraform.tfstate
-/terraform.tfstate.backup
-/terraform.tfvars
-/vm1.key
-/vm1.key.pub
+/terraform/.terraform
+/terraform/.terraform.lock.hcl
+/terraform/terraform.tfstate
+/terraform/terraform.tfstate.backup
+/terraform/terraform.tfvars
+/terraform/vm1.key
+/terraform/vm1.key.pub
+/ansible-lab/fullchain.pem
+/ansible-lab/privkey.pem
+/ansible-lab/terraform.tfstate

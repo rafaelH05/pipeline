@@ -1,0 +1,80 @@
+---
+- name: Crear red privada Docker y despliegue de contenedor
+  hosts: vm2
+  become: yes
+
+  tasks:
+
+    - name: Crear red privada de Docker
+      community.docker.docker_network:
+        name: red-interna
+        state: present
+
+    - name: Disparar GitHub Action para desplegar contenedor
+      ansible.builtin.uri:
+        url: "https://api.github.com/repos/rafaelH05/reserva-polideportivo-backend/actions/workflows/deploy.yml/dispatches"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ github_token }}"
+          Accept: "application/vnd.github.v3+json"
+          X-GitHub-Api-Version: "2022-11-28"
+        body_format: json
+        body:
+          ref: "main"
+        status_code: 204
+      delegate_to: localhost
+      become: no
+
+
+- name: Instalar nginx, actualizar configuracion del proxy, copiar certificado y clave privada y reiniciar servicio
+  hosts: bastion
+  become: yes
+
+  tasks:
+    - name: Instalar paquetes
+      apt:
+        update_cache: yes
+        name:
+          - nginx
+        state: present
+
+    - name: copiar certificado
+      ansible.builtin.copy:
+        src: /home/administrador/Escritorio/ansible-lab/fullchain.pem
+        dest: /etc/ssl/certs
+
+    - name: copiar clave privada
+      ansible.builtin.copy:
+        src: /home/administrador/Escritorio/ansible-lab/privkey.pem
+        dest: /etc/ssl/private
+
+    - name: borrar archivo default
+      ansible.builtin.file:
+        path: /etc/nginx/sites-available/default
+        state: absent
+
+    - name: copiar configuracion del servidor nginx
+      ansible.builtin.copy:
+        src: /home/administrador/Escritorio/ansible-lab/default
+        dest: /etc/nginx/sites-available
+
+    - name: reiniciar servicio Nginx
+      ansible.builtin.systemd:
+        name: nginx.service
+        state: restarted
+        daemon_reload: true
+
+    - name: Disparar GitHub Action para desplegar contenedor
+      ansible.builtin.uri:
+        url: "https://api.github.com/repos/rafaelH05/reserva-polideportivo-frontend/actions/workflows/deploy.yml/dispatches"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ github_token }}"
+          Accept: "application/vnd.github.v3+json"
+          X-GitHub-Api-Version: "2022-11-28"
+        body_format: json
+        body:
+          ref: "main"
+        status_code: 204
+      delegate_to: localhost
+      become: no

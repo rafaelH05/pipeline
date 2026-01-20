@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  # Monitorizar VM3 
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Monitorizar de VM2
+  - job_name: 'vm2-metrics'
+    static_configs:
+      - targets: ['10.0.1.102:9100'] 
+        labels:
+          alias: 'Servidor-Principal'

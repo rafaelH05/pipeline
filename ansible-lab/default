@@ -1,0 +1,34 @@
+server {
+    listen 443 ssl;
+    server_name sportvillaverde.duckdns.org;
+	
+    ssl_certificate /etc/ssl/certs/fullchain.pem;
+    ssl_certificate_key /etc/ssl/private/privkey.pem;
+    
+    
+    location / {
+        proxy_pass http://10.0.1.102;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+    location /monitor/ {
+        proxy_pass http://10.0.1.103;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+server {
+    listen 80;
+    server_name reservas-villaverde.duckdns.org;
+	    
+    location / {
+        proxy_pass http://10.0.1.102;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+    location /monitor/ {
+        proxy_pass http://10.0.1.103;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}

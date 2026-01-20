@@ -9,39 +9,54 @@ resource "aws_security_group" "vm2-sg" {
     protocol = "tcp"
     cidr_blocks = ["10.0.1.0/24"]
   }
+  
+  ingress {
+    from_port = 8080
+    to_port = 8080
+    protocol = "tcp"
+    cidr_blocks = ["10.0.1.0/24"]
+  }
 
   ingress {
     to_port = 80
     from_port = 80
     protocol = "tcp"
-    cidr_blocks = [ "10.0.1.0/24" ]
+    cidr_blocks = ["10.0.1.0/24"]
   }
   
+  ingress {
+    to_port = 443
+    from_port = 443
+    protocol = "tcp"
+    cidr_blocks = ["10.0.1.0/24"]
+  }
+
+  ingress {
+    to_port = 9100
+    from_port = 9100
+    protocol = "tcp"
+    cidr_blocks = [ "10.0.1.103/32" ]
+  }
+
   egress {
     to_port = 0
     from_port = 0
     protocol = "-1"
     cidr_blocks = [ "0.0.0.0/0" ]
   }
-
+  
 }
 
 resource "aws_security_group" "db-sg" {
   name = "db-sg"
-  description = "Permite solo acceso desde vm1 y vm2 por el puerto 3306"
+  description = "Permite solo acceso desde vm2 por el puerto 3306"
   vpc_id = aws_vpc.red_reservas.id
 
   ingress {
     from_port = 3306
     to_port = 3306
     protocol = "tcp"
-    cidr_blocks = [ "10.0.1.0/24" ]
-  }
-  egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = [ "0.0.0.0/0" ]
+    cidr_blocks = [ "10.0.1.102/32" ]
   }
 }
 
@@ -61,6 +76,13 @@ resource "aws_security_group" "vm1-sg" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    to_port = 443
+    from_port = 443
+    protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 

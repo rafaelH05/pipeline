@@ -1,0 +1,70 @@
+---
+# BLOQUE 1: CONFIGURAR AGENTES EN VM2
+- name: Desplegar Agentes de Monitorización en VM2
+  hosts: vm2
+  become: yes
+  tasks:
+    - name: Crear carpeta de monitorización
+      file:
+        path: /home/ubuntu/monitoring
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+
+    # NOTA: HE BORRADO LA TAREA DE COPIAR PROMETHEUS.YML AQUÍ
+
+    - name: Copiar Docker Compose de Agentes
+      copy:
+        src: files/docker-compose-vm2.yml
+        dest: /home/ubuntu/monitoring/docker-compose.yml
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Levantar contenedores (Node Exporter)
+      shell: docker-compose up -d --remove-orphans # Añadí remove-orphans para que borre el grafana viejo
+      args:
+        chdir: /home/ubuntu/monitoring
+
+# BLOQUE 2: CONFIGURAR SERVIDOR EN VM3 (GRAFANA/PROMETHEUS)
+- name: Desplegar Servidor de Monitorización en VM3
+  hosts: vm3
+  become: yes
+  tasks:
+    # 1. ELIMINAR la versión vieja (para evitar conflictos)
+    - name: Desinstalar docker-compose antiguo
+      apt:
+        name: docker-compose
+        state: absent
+
+    # 2. INSTALAR el plugin nuevo (V2)
+    - name: Instalar Docker Compose Plugin
+      apt:
+        update_cache: yes
+        name: docker-compose-plugin
+        state: present
+
+    - name: Crear carpeta de monitorización
+      file:
+        path: /home/ubuntu/monitoring
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Copiar Docker Compose de Servidor
+      copy:
+        src: files/docker-compose-vm3.yml
+        dest: /home/ubuntu/monitoring/docker-compose.yml
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Copiar configuración de Prometheus
+      copy:
+        src: files/prometheus.yml
+        dest: /home/ubuntu/monitoring/prometheus.yml
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Levantar contenedores (Grafana/Prometheus)
+      shell: docker compose up -d
+      args:
+        chdir: /home/ubuntu/monitoring

@@ -12,6 +12,12 @@ provider "aws" {
   secret_key = var.secret_key
 }
 
+
+resource "aws_eip_association" "asoc_fija" {
+  instance_id   = aws_instance.vm1.id           
+  allocation_id = "eipalloc-07b2be7263955b075"  
+}
+
 resource "aws_instance" "vm1" {
   ami           = "ami-0ecb62995f68bb549"
   instance_type = "t3.micro"
@@ -27,6 +33,7 @@ resource "aws_instance" "vm1" {
   user_data = <<-EOF
               #!/bin/bash
               sudo apt update
+              sudo apt install -y nginx
               sudo apt install mariadb-client -y
               EOF
 
@@ -48,8 +55,8 @@ resource "aws_instance" "vm2" {
   user_data = <<-EOF
               #!/bin/bash
               sudo apt update
-              sudo apt install -y nginx
-              sudo systemctl start nginx
+              sudo apt install -y docker.io
+              sudo usermod -aG docker ubuntu
               EOF
   subnet_id = aws_subnet.subnet_reservas.id
   key_name = aws_key_pair.ssh-clave.key_name
