@@ -19,6 +19,11 @@ jobs:
     - name: Terraform Apply
       id: tf
       working-directory: ./terraform
+      env:
+        TF_VAR_vm1_key: ${{secrets.SSH_PUBLIC_KEY}}
+        TF_VAR_db_name: ${{secrets.DB_NAME}}
+        TF_VAR_username: ${{secrets.USERNAME}}
+        TF_VAR_password: ${{secrets.PASSWORD}}
       run: |
         terraform init
         terraform apply -auto-approve
