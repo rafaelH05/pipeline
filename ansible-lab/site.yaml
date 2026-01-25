@@ -21,6 +21,8 @@
         body_format: json
         body:
           ref: "main"
+          client_payload:
+            db_host_rds: "{{ db_host }}"
         status_code: 204
       delegate_to: localhost
       become: no
