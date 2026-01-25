@@ -41,14 +41,12 @@ jobs:
     - name: Generar Inventario Ansible
       working-directory: ./ansible-lab
       run: |
-        # Definimos vm1
-        echo "[vm1]" > hosts.ini
+        
+        echo "[bastion]" > hosts.ini
         echo "${{ env.BASTION_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=key.pem" >> hosts.ini
-        
-        echo "[vm2]" >> hosts.ini
+
+        echo "[privadas]" >> hosts.ini
         echo "${{ env.VM2_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=key.pem ansible_ssh_common_args='-o ProxyCommand=\"ssh -W %h:%p -q ubuntu@${{ env.BASTION_IP }} -i key.pem -o StrictHostKeyChecking=no\"'" >> hosts.ini
-        
-        echo "[vm3]" >> hosts.ini
         echo "${{ env.VM3_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=key.pem ansible_ssh_common_args='-o ProxyCommand=\"ssh -W %h:%p -q ubuntu@${{ env.BASTION_IP }} -i key.pem -o StrictHostKeyChecking=no\"'" >> hosts.ini
 
     - name: Configurar Clave SSH
