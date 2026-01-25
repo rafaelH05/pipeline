@@ -22,7 +22,7 @@
         body:
           ref: "main"
           inputs: 
-          db_host_rds: "{{ db_host }}"
+            db_host_rds: "{{ db_host }}"
         status_code: 204
       delegate_to: localhost
       become: no
