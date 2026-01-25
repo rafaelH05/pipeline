@@ -40,12 +40,12 @@
 
     - name: copiar certificado
       ansible.builtin.copy:
-        src: /home/administrador/Escritorio/ansible-lab/fullchain.pem
+        src: ./files/fullchain.pem
         dest: /etc/ssl/certs
 
     - name: copiar clave privada
       ansible.builtin.copy:
-        src: /home/administrador/Escritorio/ansible-lab/privkey.pem
+        src: ./files/privkey.pem
         dest: /etc/ssl/private
 
     - name: borrar archivo default
@@ -55,7 +55,7 @@
 
     - name: copiar configuracion del servidor nginx
       ansible.builtin.copy:
-        src: /home/administrador/Escritorio/ansible-lab/default
+        src: default
         dest: /etc/nginx/sites-available
 
     - name: reiniciar servicio Nginx
