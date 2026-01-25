@@ -1,11 +1,3 @@
-variable "access_key" {
-  type = string
-}
-
-variable "secret_key" {
-  type = string
-}
-
 variable "vm1_key" {
   type = string
 }
