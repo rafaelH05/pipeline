@@ -55,13 +55,15 @@ jobs:
       run: |
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > key.pem
         chmod 600 key.pem
+        mkdir -p ~/.ssh
+        echo "StrictHostKeyChecking no" >> ~/.ssh/config
         export ANSIBLE_HOST_KEY_CHECKING=False
         
     - name: Crear archivos de certificado desde Secrets
       run: |
         echo "${{ secrets.SSL_FULLCHAIN }}" > ansible-lab/files/fullchain.pem
         echo "${{ secrets.SSL_PRIVKEY }}" > ansible-lab/files/privkey.pem
-        
+    
     - name: Ejecutar Ansible
       working-directory: ./ansible-lab
       env:
