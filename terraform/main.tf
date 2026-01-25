@@ -4,12 +4,17 @@ terraform {
       source = "hashicorp/aws"
     }
   }
+
+  backend "s3" {
+    bucket         = "state-rafael101"
+    key            = "proyectos/reserva/terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+  }
 }
 
 provider "aws" {
   region     = "us-east-1"
-  access_key = var.access_key
-  secret_key = var.secret_key
 }
 
 
@@ -44,7 +49,7 @@ resource "aws_instance" "vm1" {
 
 resource "aws_key_pair" "ssh-clave" {
   key_name   = "ssh-clave"
-  public_key = file(var.vm1_key)
+  public_key = var.vm1_key
 }
 
 
