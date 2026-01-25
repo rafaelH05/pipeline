@@ -2,7 +2,7 @@
 - name: Crear red privada Docker y despliegue de contenedor
   hosts: vm2
   become: yes
-
+#
   tasks:
 
     - name: Crear red privada de Docker
