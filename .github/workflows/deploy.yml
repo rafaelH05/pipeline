@@ -61,5 +61,5 @@ jobs:
       env:
         ANSIBLE_HOST_KEY_CHECKING: "False"
       run: |
-        ansible-playbook -i hosts.ini playbook.yml \
+        ansible-playbook -i hosts.ini site.yaml \
         --extra-vars "db_host=${{ env.RDS_HOST }} github_token=${{ secrets.MI_GITHUB_TOKEN }}"
