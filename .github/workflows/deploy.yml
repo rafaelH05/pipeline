@@ -66,6 +66,7 @@ jobs:
       working-directory: ./ansible-lab
       env:
         ANSIBLE_HOST_KEY_CHECKING: "False"
+        ANSIBLE_SSH_RETRIES: "3"
       run: |
         ansible-playbook -i hosts.ini site.yaml \
         --extra-vars "db_host=${{ env.RDS_HOST }} github_token=${{ secrets.MI_GITHUB_TOKEN }}"
