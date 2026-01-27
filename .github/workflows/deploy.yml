@@ -37,16 +37,15 @@ jobs:
         echo "VM3_IP=$(terraform output -raw vm3_private_ip)" >> $GITHUB_ENV
 
     - name: Generar Inventario Ansible
-      working-directory: ./ansible-lab
       run: |
         
         echo "[bastion]" > hosts.ini
         echo "${{ env.BASTION_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=ansible-lab/key.pem" >> hosts.ini
 
         echo "[vm2]" >> hosts.ini
-        echo "${{ env.VM2_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=key.pem ansible_ssh_common_args='-o ProxyCommand=\"ssh -W %h:%p -q ubuntu@${{ env.BASTION_IP }} -i key.pem -o StrictHostKeyChecking=no\"'" >> hosts.ini
+        echo "${{ env.VM2_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=ansible-lab/key.pem ansible_ssh_common_args='-o ProxyCommand=\"ssh -W %h:%p -q ubuntu@${{ env.BASTION_IP }} -i key.pem -o StrictHostKeyChecking=no\"'" >> hosts.ini
         echo "[vm3]" >> hosts.ini
-        echo "${{ env.VM3_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=key.pem ansible_ssh_common_args='-o ProxyCommand=\"ssh -W %h:%p -q ubuntu@${{ env.BASTION_IP }} -i key.pem -o StrictHostKeyChecking=no\"'" >> hosts.ini
+        echo "${{ env.VM3_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=ansible-lab/key.pem ansible_ssh_common_args='-o ProxyCommand=\"ssh -W %h:%p -q ubuntu@${{ env.BASTION_IP }} -i key.pem -o StrictHostKeyChecking=no\"'" >> hosts.ini
 
     - name: Configurar Clave SSH
       working-directory: ./ansible-lab
@@ -69,7 +68,7 @@ jobs:
         max_attempts: 3        
         retry_on: error  
         command: |
-          ansible-playbook -i ansible-lab/hosts.ini ansible-lab/site.yaml \
+          ansible-playbook -i hosts.ini ansible-lab/site.yaml \
             --extra-vars "db_host=${{ env.RDS_HOST }} github_token=${{ secrets.MI_GITHUB_TOKEN }}"
       env:
         ANSIBLE_HOST_KEY_CHECKING: "False" 
