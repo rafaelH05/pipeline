@@ -72,17 +72,12 @@ jobs:
       run: |
         ansible-playbook -i hosts.ini site.yaml \
         --extra-vars "db_host=${{ env.RDS_HOST }} github_token=${{ secrets.MI_GITHUB_TOKEN }}"
-
-    - name: Pausa de seguridad si falló el primero
-      if: steps.ansible_1.outcome == 'failure'
-      run: sleep 40
-
-    - name: Intento 2 de Ansible 
-      working-directory: ./ansible-lab
-      env:
-        ANSIBLE_HOST_KEY_CHECKING: "False"
-        ANSIBLE_SSH_RETRIES: "3"
+    
+    - name: Auto-reintento del Pipeline completo si todo falla
       if: steps.ansible_1.outcome == 'failure'
       run: |
-        ansible-playbook -i hosts.ini site.yaml \
-        --extra-vars "db_host=${{ env.RDS_HOST }} github_token=${{ secrets.MI_GITHUB_TOKEN }}"
+        curl -X POST \
+          -H "Authorization: token ${{ secrets.MI_GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy.yml/dispatches \
+          -d '{"ref":"main"}'
