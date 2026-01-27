@@ -67,7 +67,8 @@ jobs:
       with:
         timeout_minutes: 10
         max_attempts: 3        
-        retry_on: error        
+        retry_on: error   
+        working_directory: ./ansible-lab     
         command: |
           ansible-playbook -i hosts.ini site.yaml \
             --extra-vars "db_host=${{ env.RDS_ENDPOINT }} github_token=${{ secrets.MI_GITHUB_TOKEN }}"
