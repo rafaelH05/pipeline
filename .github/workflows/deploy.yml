@@ -67,10 +67,9 @@ jobs:
       with:
         timeout_minutes: 10
         max_attempts: 3        
-        retry_on: error   
-        working_directory: ./ansible-lab     
+        retry_on: error  
         command: |
-          ansible-playbook -i hosts.ini site.yaml \
+          ansible-playbook -i hosts.ini ansible-lab/site.yaml \
             --extra-vars "db_host=${{ env.RDS_HOST }} github_token=${{ secrets.MI_GITHUB_TOKEN }}"
       env:
         ANSIBLE_HOST_KEY_CHECKING: "False" 
