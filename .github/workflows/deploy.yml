@@ -41,7 +41,7 @@ jobs:
       run: |
         
         echo "[bastion]" > hosts.ini
-        echo "${{ env.BASTION_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=key.pem" >> hosts.ini
+        echo "${{ env.BASTION_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=ansible-lab/key.pem" >> hosts.ini
 
         echo "[vm2]" >> hosts.ini
         echo "${{ env.VM2_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=key.pem ansible_ssh_common_args='-o ProxyCommand=\"ssh -W %h:%p -q ubuntu@${{ env.BASTION_IP }} -i key.pem -o StrictHostKeyChecking=no\"'" >> hosts.ini
