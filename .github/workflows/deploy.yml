@@ -37,15 +37,16 @@ jobs:
         echo "VM3_IP=$(terraform output -raw vm3_private_ip)" >> $GITHUB_ENV
 
     - name: Generar Inventario Ansible
+      working-directory: ./ansible-lab
       run: |
         
         echo "[bastion]" > hosts.ini
-        echo "${{ env.BASTION_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=ansible-lab/key.pem" >> hosts.ini
+        echo "${{ env.BASTION_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=key.pem" >> hosts.ini
 
         echo "[vm2]" >> hosts.ini
-        echo "${{ env.VM2_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=ansible-lab/key.pem ansible_ssh_common_args='-o ProxyCommand=\"ssh -W %h:%p -q ubuntu@${{ env.BASTION_IP }} -i key.pem -o StrictHostKeyChecking=no\"'" >> hosts.ini
+        echo "${{ env.VM2_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=key.pem ansible_ssh_common_args='-o ProxyCommand=\"ssh -W %h:%p -q ubuntu@${{ env.BASTION_IP }} -i key.pem -o StrictHostKeyChecking=no\"'" >> hosts.ini
         echo "[vm3]" >> hosts.ini
-        echo "${{ env.VM3_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=ansible-lab/key.pem ansible_ssh_common_args='-o ProxyCommand=\"ssh -W %h:%p -q ubuntu@${{ env.BASTION_IP }} -i key.pem -o StrictHostKeyChecking=no\"'" >> hosts.ini
+        echo "${{ env.VM3_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=key.pem ansible_ssh_common_args='-o ProxyCommand=\"ssh -W %h:%p -q ubuntu@${{ env.BASTION_IP }} -i key.pem -o StrictHostKeyChecking=no\"'" >> hosts.ini
 
     - name: Configurar Clave SSH
       working-directory: ./ansible-lab
@@ -61,15 +62,27 @@ jobs:
         echo "${{ secrets.SSL_FULLCHAIN }}" > ansible-lab/files/fullchain.pem
         echo "${{ secrets.SSL_PRIVKEY }}" > ansible-lab/files/privkey.pem
     
-    - name: Ejecutar Ansible con Reintentos
-      uses: nick-fields/retry@v3
-      with:
-        timeout_minutes: 10
-        max_attempts: 3        
-        retry_on: error  
-        command: |
-          ansible-playbook -i hosts.ini ansible-lab/site.yaml \
-            --extra-vars "db_host=${{ env.RDS_HOST }} github_token=${{ secrets.MI_GITHUB_TOKEN }}"
+    - name: Ejecutar Ansible intento 1
+      working-directory: ./ansible-lab
+      continue-on-error: true
+      id: ansible_1
       env:
-        ANSIBLE_HOST_KEY_CHECKING: "False" 
-        ANSIBLE_SSH_RETRIES: "10"
+        ANSIBLE_HOST_KEY_CHECKING: "False"
+        ANSIBLE_SSH_RETRIES: "3"
+      run: |
+        ansible-playbook -i hosts.ini site.yaml \
+        --extra-vars "db_host=${{ env.RDS_HOST }} github_token=${{ secrets.MI_GITHUB_TOKEN }}"
+
+    - name: Pausa de seguridad si falló el primero
+      if: steps.ansible_1.outcome == 'failure'
+      run: sleep 40
+
+    - name: Intento 2 de Ansible 
+      working-directory: ./ansible-lab
+      env:
+        ANSIBLE_HOST_KEY_CHECKING: "False"
+        ANSIBLE_SSH_RETRIES: "3"
+      if: steps.ansible_1.outcome == 'failure'
+      run: |
+        ansible-playbook -i hosts.ini site.yaml \
+        --extra-vars "db_host=${{ env.RDS_HOST }} github_token=${{ secrets.MI_GITHUB_TOKEN }}"
