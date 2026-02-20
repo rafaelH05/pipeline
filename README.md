@@ -98,12 +98,50 @@ Gestión de Secretos: Todas las credenciales críticas (SSH Keys, DB Passwords, 
 
 ## 6. Backend (Spring Boot)
 
+El backend ha sido desarrollado como una **API REST con Spring Boot**, encargada de centralizar toda la lógica de negocio, gestión de usuarios y control de reservas de instalaciones deportivas.
+
+Se ha implementado una estructura en capas que permite separar responsabilidades y mantener el código escalable y mantenible. Los controladores exponen endpoints REST para la gestión de usuarios y reservas, delegando la lógica en servicios intermedios que encapsulan validaciones y reglas de negocio. La capa de persistencia se ha construido mediante JPA/Hibernate, facilitando el acceso a base de datos y el mapeo objeto-relacional de las entidades del dominio.
+
+Uno de los aspectos relevantes del backend es la implementación de autenticación mediante JWT. Tras la validación de credenciales en el endpoint de login, el sistema genera un token que identifica al usuario de forma stateless. Este token es posteriormente utilizado para proteger endpoints y controlar el acceso a recursos, integrándose con Spring Security mediante configuración personalizada.
+
+Además, se ha trabajado en:
+
+* Implementación de endpoints CRUD para usuarios y reservas.
+* Validación de credenciales mediante password hashing.
+* Generación y validación de tokens JWT.
+* Configuración de rutas públicas y rutas protegidas.
+* Manejo de respuestas HTTP y códigos de estado adecuados.
+* Serialización JSON para comunicación con el cliente.
+* Resolución de errores de parsing y consistencia de respuestas API.
+* Adaptación del backend a entornos local y producción mediante configuración de URLs.
+
+Este desarrollo demuestra competencias en construcción de APIs REST seguras, modelado de dominio, control de acceso y gestión de persistencia en aplicaciones Java empresariales.
+
 
 ---
 
 ## 7. Frontend (Angular)
 
+El frontend se ha implementado como una **Single Page Application con Angular**, orientada a ofrecer una experiencia interactiva para la gestión de reservas del polideportivo.
 
+La aplicación se estructura en componentes reutilizables responsables de la representación de vistas y la interacción con el usuario, mientras que la lógica de comunicación con el backend se encapsula en servicios dedicados al consumo de la API REST mediante HttpClient. Esto permite desacoplar la lógica de presentación del acceso a datos y facilita la mantenibilidad del proyecto.
+
+Se ha integrado PrimeNG como librería de componentes UI, permitiendo construir interfaces más ricas con tablas, formularios y elementos interactivos sin necesidad de desarrollo visual desde cero.
+
+Un aspecto clave del frontend es la gestión del estado de autenticación. Tras el login, el token recibido se almacena en cliente y se utiliza para incluir credenciales en peticiones posteriores. Además, se ha implementado renderizado condicional de elementos de la interfaz en función del estado de sesión, permitiendo mostrar funcionalidades solo a usuarios autenticados.
+
+También se ha trabajado en:
+
+* Formularios reactivos para login y gestión de datos.
+* Consumo de endpoints REST y manejo de respuestas HTTP.
+* Manejo de errores 401, 403 y 500 en cliente.
+* Interceptación de peticiones para adjuntar token automáticamente.
+* Navegación interna mediante routing sin recarga de página.
+* Configuración de entornos para alternar backend local y desplegado.
+* Carga dinámica de datos de usuarios y reservas.
+* Feedback visual y control de estados de carga.
+
+Este desarrollo refleja competencias en construcción de SPA modernas, integración con APIs, gestión de autenticación en cliente y estructuración de aplicaciones Angular orientadas a producción.
 
 ---
 
