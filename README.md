@@ -113,7 +113,6 @@ Además, se ha trabajado en:
 * Manejo de respuestas HTTP y códigos de estado adecuados.
 * Serialización JSON para comunicación con el cliente.
 * Resolución de errores de parsing y consistencia de respuestas API.
-* Adaptación del backend a entornos local y producción mediante configuración de URLs.
 
 Este desarrollo demuestra competencias en construcción de APIs REST seguras, modelado de dominio, control de acceso y gestión de persistencia en aplicaciones Java empresariales.
 
@@ -124,9 +123,9 @@ Este desarrollo demuestra competencias en construcción de APIs REST seguras, mo
 
 El frontend se ha implementado como una **Single Page Application con Angular**, orientada a ofrecer una experiencia interactiva para la gestión de reservas del polideportivo.
 
-La aplicación se estructura en componentes reutilizables responsables de la representación de vistas y la interacción con el usuario, mientras que la lógica de comunicación con el backend se encapsula en servicios dedicados al consumo de la API REST mediante HttpClient. Esto permite desacoplar la lógica de presentación del acceso a datos y facilita la mantenibilidad del proyecto.
+La aplicación se estructura en componentes reutilizables responsables de la representación de vistas y la interacción con el usuario, mientras que la lógica de comunicación con el backend se encapsula en servicios dedicados al consumo de la API REST mediante HttpClient.
 
-Se ha integrado PrimeNG como librería de componentes UI, permitiendo construir interfaces más ricas con tablas, formularios y elementos interactivos sin necesidad de desarrollo visual desde cero.
+Se ha integrado Bootstrap5 como librería de componentes UI, permitiendo construir interfaces más ricas con tablas, formularios y elementos interactivos sin necesidad de desarrollo visual desde cero.
 
 Un aspecto clave del frontend es la gestión del estado de autenticación. Tras el login, el token recibido se almacena en cliente y se utiliza para incluir credenciales en peticiones posteriores. Además, se ha implementado renderizado condicional de elementos de la interfaz en función del estado de sesión, permitiendo mostrar funcionalidades solo a usuarios autenticados.
 
